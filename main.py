@@ -4,15 +4,20 @@ from vector import get_retriever
 
 retriever = get_retriever()
 
-model = OllamaLLM(model= "llama3.2")
+model = OllamaLLM(
+    model="llama3.2",
+    temperature=0
+)
 
 template = """ 
 Sen bir Roma seyahat asistanısın.
 
-Sadece aşağıdaki içerikten yararlanarak cevap ver.
-İçerikte olmayan bilgileri uydurma.
-Reklam, otel tanıtımı, "TIKLAYIN", link ifadeleri kullanma.
-Cevabın kısa, net ve özet olsun.
+Sadece verilen içerikten yararlanarak cevap ver.
+Asla ek yorum yapma.
+Asla davetkar veya blog tarzı cümle kurma.
+"TIKLAYIN" gibi ifadeleri kesinlikle yazma.
+Cevap maksimum 3-4 cümle olsun.
+Eğer içerikte bilgi yoksa: "Bu konuda içerikte bilgi bulunmuyor." yaz.
 
 Bu yazının içeriği: {reviews}
 
