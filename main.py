@@ -35,7 +35,7 @@ while True:
     if question == "q":
         break
 
-    # 🔎 Retriever'dan ilgili chunkları çek
+    # retriever dan gelen chunklari ceker
     docs = retriever.invoke(question)
 
     filtered_docs = [
@@ -44,10 +44,10 @@ while True:
     ]
 
 
-    # 📄 Sadece metinleri birleştir
+    # metinleri birlestirir. tiklayinizi cikardim cok fazla oluyordu answerda
     reviews = "\n\n".join([doc.page_content for doc in filtered_docs])
 
-    # 🤖 LLM'e gönder
+    # LLM e gonderme alani
     result = chain.invoke({
         "reviews": reviews,
         "question": question

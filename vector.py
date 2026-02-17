@@ -9,10 +9,10 @@ from scraper import scrape_roma
 
 def create_vector_store():
 
-    # 📁 Vector DB klasörü
+    # vector db klasoru
     db_location = "./roma_chroma_db"
 
-    # 🔁 Eğer DB varsa tekrar scrape + embed yapma
+    # if DB varsa tekrar scrape + embed yapma
     if os.path.exists(db_location):
         embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
@@ -24,13 +24,13 @@ def create_vector_store():
 
         return vector_store
 
-    # 1️⃣ Roma içeriğini scrape et
+    # Roma icerigini scrape ettik
     text = scrape_roma()
 
-    # 2️⃣ Document formatına çevir
+    # document formatina cevirdik
     docs = [Document(page_content=text)]
 
-    # 3️⃣ Chunking
+    # chunking islemi
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=200
@@ -38,10 +38,10 @@ def create_vector_store():
 
     chunks = splitter.split_documents(docs)
 
-    # 4️⃣ Embedding modeli
+    # embedding modeli
     embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
-    # 5️⃣ Vector Store oluştur
+    # vector store olusturduk
     vector_store = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
@@ -52,7 +52,7 @@ def create_vector_store():
     return vector_store
 
 
-# 🔍 Retriever oluşturma fonksiyonu
+# retriever olusturma fonksiyonu
 def get_retriever():
     vector_store = create_vector_store()
 
