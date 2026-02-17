@@ -1,39 +1,64 @@
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 import os
-import pandas as pd
+from scraper import scrape_roma
 
-df = pd.read_csv("realistic_restaurant_reviews.csv")
-embeddings= OllamaEmbeddings(model="mxbai-embed-large")
 
-db_location="./chrome_langchain_db"
-add_documents = not os.path.exists(db_location)
+def create_vector_store():
 
-if add_documents:
-    documents = []
-    ids = []
+    # 📁 Vector DB klasörü
+    db_location = "./roma_chroma_db"
 
-    for i, row in df.iterrows():
-        document = Document(
-            page_content=row["Title"] + " " + row["Review"],
-            metadata={"rating":row["Rating"], "date": row["Date"]},
-            id= str(i)
+    # 🔁 Eğer DB varsa tekrar scrape + embed yapma
+    if os.path.exists(db_location):
+        embeddings = OllamaEmbeddings(model="mxbai-embed-large")
+
+        vector_store = Chroma(
+            collection_name="roma_travel",
+            persist_directory=db_location,
+            embedding_function=embeddings
         )
 
-        ids.append(str(i))
-        documents.append(document)
+        return vector_store
 
-vector_store = Chroma(
-    collection_name="restaurant_reviews",
-    persist_directory=db_location,
-    embedding_function=embeddings
-)
+    # 1️⃣ Roma içeriğini scrape et
+    text = scrape_roma()
 
-if add_documents:
-    vector_store.add_documents(documents=documents,ids=ids)
+    # 2️⃣ Document formatına çevir
+    docs = [Document(page_content=text)]
+
+    # 3️⃣ Chunking
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=200
+    )
+
+    chunks = splitter.split_documents(docs)
+
+    # 4️⃣ Embedding modeli
+    embeddings = OllamaEmbeddings(model="mxbai-embed-large")
+
+    # 5️⃣ Vector Store oluştur
+    vector_store = Chroma.from_documents(
+        documents=chunks,
+        embedding=embeddings,
+        collection_name="roma_travel",
+        persist_directory=db_location
+    )
+
+    return vector_store
 
 
-retriver = vector_store.as_retriever(
-    search_kwargs={"k":5}
-)
+# 🔍 Retriever oluşturma fonksiyonu
+def get_retriever():
+    vector_store = create_vector_store()
+
+    retriever = vector_store.as_retriever(
+        search_kwargs={"k": 3}
+    )
+
+    return retriever
+
