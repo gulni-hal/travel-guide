@@ -1,5 +1,5 @@
 #  Travel Guide RAG Chatbot (Roma)
-Bu projeyi gelecek Roma seyahatime hazırlık olarak tasarlanmış bir RAG (Retrieval-Augmented Generation) temelli chatbottur. Chatbot sorulara, seyahatimi planlarken oldukça kullandığım bir blog websitesini scrape edilen gerçek veriler ile cevap verir.
+Bu proje gelecek Roma seyahatime hazırlık olarak tasarlanmış bir RAG (Retrieval-Augmented Generation) temelli chatbottur. Chatbot sorulara, seyahatimi planlarken oldukça kullandığım bir blog websitesini scrape edilen gerçek veriler ile cevap verir.
 Sistem Ollama aracılığıyla local ortamda çalışmaktadır.
 
 ---
